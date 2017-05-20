@@ -1,22 +1,28 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace NetMentoring
 {
-    public class MemoryStreamLogger
+    public class MemoryStreamLogger : IDisposable
     {
         private FileStream memoryStream;
         private StreamWriter streamWriter;
 
         public MemoryStreamLogger()
         {
-            memoryStream = new FileStream(@"\log.txt", FileMode.OpenOrCreate);
+            memoryStream = new FileStream(@"\log.txt", FileMode.OpenOrCreate | FileMode.Append);
             streamWriter = new StreamWriter(memoryStream);
         }
 
         public void Log(string message)
         {
-            streamWriter.Write(message);
+            streamWriter.WriteLine(message);
         }
 
-   }
+        public void Dispose()
+        {
+            streamWriter?.Close();
+            GC.SuppressFinalize(this);
+        }
+    }
 }
